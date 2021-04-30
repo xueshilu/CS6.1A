@@ -22,6 +22,17 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    sum = 0
+    isOne = False
+    for i in range(num_rolls):
+        roll = dice()
+        sum += roll
+        if roll == 1:
+            isOne = True
+    if(isOne):
+        sum = 1
+    return sum
+
     # END PROBLEM 1
 
 
@@ -32,6 +43,12 @@ def piggy_points(score):
     """
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    pow_score = pow(score, 2)
+    min_digit = pow_score%10
+    while pow_score != 0:
+        min_digit = min(pow_score%10, min_digit)
+        pow_score = pow_score // 10
+    return  min_digit+3
     # END PROBLEM 2
 
 
@@ -52,6 +69,10 @@ def take_turn(num_rolls, opponent_score, dice=six_sided, goal=GOAL_SCORE):
     assert opponent_score < goal, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls == 0:
+        return piggy_points(opponent_score)
+
+    return roll_dice(num_rolls, dice)
     # END PROBLEM 3
 
 
@@ -74,6 +95,20 @@ def more_boar(player_score, opponent_score):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    isSmall = []
+    while(player_score != 0 or opponent_score != 0):
+        if player_score%10 < opponent_score%10:
+            isSmall.append(True)
+        else:
+            isSmall.append(False)
+        player_score = player_score // 10
+        opponent_score = opponent_score // 10
+    if len(isSmall) < 2:
+        return False
+    if isSmall[-1] and isSmall[-2]:
+        return True
+    else:
+        return False
     # END PROBLEM 4
 
 
@@ -113,6 +148,24 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    while(score0 < goal and score1 < goal):
+        score, opponent = 0, 0
+        if who == 0:
+            score, opponent = score0, score1
+        else:
+            score, opponent = score1, score0
+        strategy = strategy0(score, opponent) if who == 0 else strategy1(score, opponent)
+        sum = take_turn(strategy, opponent, dice, goal)
+        
+        if who == 0:
+            score0 += sum
+        else:
+            score1 += sum
+        
+        if more_boar(score+sum, opponent):
+            who = who
+        else:
+            who = next_player(who)
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
