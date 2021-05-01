@@ -408,7 +408,7 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    
+
     return 6  # Replace this statement
     # END PROBLEM 12
 
