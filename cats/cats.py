@@ -31,6 +31,12 @@ def choose(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    newPars = [par for par in paragraphs if select(par)]
+    if k >= len(newPars):
+        return ''
+    else:
+        return newPars[k]
+
     # END PROBLEM 1
 
 
