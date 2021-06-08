@@ -97,14 +97,20 @@ class Frame:
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 2
         "*** YOUR CODE HERE ***"
+        self.bindings[symbol] = value
         # END PROBLEM 2
 
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 2
         "*** YOUR CODE HERE ***"
+        if symbol in self.bindings:
+            return self.bindings[symbol]
+        elif self.parent is not None:
+            return self.parent.lookup(symbol)
+        else:
         # END PROBLEM 2
-        raise SchemeError('unknown identifier: {0}'.format(symbol))
+            raise SchemeError('unknown identifier: {0}'.format(symbol))
 
     def make_child_frame(self, formals, vals):
         """Return a new local frame whose parent is SELF, in which the symbols
@@ -161,8 +167,14 @@ class BuiltinProcedure(Procedure):
             raise SchemeError('arguments are not in a list: {0}'.format(args))
         # Convert a Scheme list to a Python list
         arguments_list = []
+        while args:
+            arguments_list.append(args.first)
+            args = args.rest
+
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        if self.use_env:
+            arguments_list.append(env)
         # END PROBLEM 3
         try:
             return self.fn(*arguments_list)
