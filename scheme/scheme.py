@@ -1,5 +1,7 @@
 """A Scheme interpreter and its read-eval-print loop."""
 
+from inspect import BoundArguments
+from math import exp
 import sys
 import os
 
@@ -36,6 +38,10 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        procedure = scheme_eval(first ,env)
+        validate_procedure(procedure)
+        args = rest.map(lambda x: scheme_eval(x, env))
+        return scheme_apply(procedure, args, env)
         # END PROBLEM 4
 
 
@@ -71,7 +77,13 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 7
-    return scheme_eval(expressions.first, env)  # replace this with lines of your own code
+    if expressions is nil:
+        return None
+    
+    while expressions:
+        ans = scheme_eval(expressions.first, env)
+        expressions = expressions.rest
+    return ans  # replace this with lines of your own code
     # END PROBLEM 7
 
 ################
@@ -128,6 +140,12 @@ class Frame:
             raise SchemeError('Incorrect number of arguments to function call')
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        frame = Frame(self)
+        while formals:
+            frame.define(formals.first, vals.first)
+            formals = formals.rest
+            vals = vals.rest
+        return frame
         # END PROBLEM 10
 
 ##############
@@ -167,7 +185,7 @@ class BuiltinProcedure(Procedure):
             raise SchemeError('arguments are not in a list: {0}'.format(args))
         # Convert a Scheme list to a Python list
         arguments_list = []
-        while args:
+        while args:   
             arguments_list.append(args.first)
             args = args.rest
 
@@ -201,6 +219,7 @@ class LambdaProcedure(Procedure):
         of values, for a lexically-scoped call evaluated in Frame ENV, the environment."""
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        return self.env.make_child_frame(self.formals, args)
         # END PROBLEM 11
 
     def __str__(self):
@@ -261,10 +280,18 @@ def do_define_form(expressions, env):
         validate_form(expressions, 2, 2)  # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
+        expr = expressions.rest.first
+        env.define(target, scheme_eval(expr, env))
+        return target
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
+        ttarget = target.first
+        formals = target.rest
+        body = expressions.rest
+        env.define(ttarget, do_lambda_form(Pair(formals, body), env))
+        return ttarget
         # END PROBLEM 9
     else:
         bad_target = target.first if isinstance(target, Pair) else target
@@ -281,6 +308,7 @@ def do_quote_form(expressions, env):
     validate_form(expressions, 1, 1)
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    return expressions.first
     # END PROBLEM 6
 
 
@@ -294,7 +322,12 @@ def do_begin_form(expressions, env):
     3
     """
     validate_form(expressions, 1)
+    # BEGIN PROBLEM 6
+    "*** YOUR CODE HERE ***"
+    # expr = read_line("('(1 2))") -> Pair(Pair('quote', Pair(Pair(1, Pair(2, nil)), nil)), nil)
+    # expr.first = Pair('quote', Pair(Pair(1, Pair(2, nil)), nil))
     return eval_all(expressions, env)
+    # END PROBLEM 6
 
 
 def do_lambda_form(expressions, env):
@@ -309,6 +342,8 @@ def do_lambda_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    body = expressions.rest
+    return LambdaProcedure(formals, body, env)
     # END PROBLEM 8
 
 
