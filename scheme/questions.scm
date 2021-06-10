@@ -13,8 +13,16 @@
 ;; Returns a list of two-element lists
 (define (enumerate s)
   ; BEGIN PROBLEM 15
-  'replace-this-line
+  ; inspect the first element and tack on the index value, then process the rest of the list
+  (define (helper lst index)
+    (if (null? lst)
+      nil
+      (cons
+        (list index (car lst)) ; equal to "(index value)"
+        (helper (cdr lst) (+ 1 index))) ; process the rest of the list with index + 1
+    )
   )
+  (helper s 0))
   ; END PROBLEM 15
 
 ;; Problem 16

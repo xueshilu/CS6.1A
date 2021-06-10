@@ -475,6 +475,9 @@ def make_let_frame(bindings, env):
     # END PROBLEM 14
     return env.make_child_frame(names, values)
 
+def do_enumerate_form(expressions, env):
+    return 
+
 
 def do_define_macro(expressions, env):
     """Evaluate a define-macro form.
@@ -530,6 +533,7 @@ SPECIAL_FORMS = {
     'define-macro': do_define_macro,
     'quasiquote': do_quasiquote_form,
     'unquote': do_unquote,
+    'enumerate': do_enumerate_form,
 }
 
 # Utility methods for checking the structure of Scheme programs
